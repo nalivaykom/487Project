@@ -341,18 +341,6 @@ public class KMACXOF256 {
 
 
 
-    
-    public static byte[] SHA3(byte[] in, int bitLen) {
-        if (bitLen != 224 && bitLen != 256 && bitLen != 384 && bitLen != 512)
-            throw new IllegalArgumentException("Supported output bit lengths are 224, 256, 384, and 512.");
-        byte[] uin = Arrays.copyOf(in, in.length + 1);
-        int bytesToPad = (1600 - bitLen*2) / 8 - in.length % (1600 - bitLen*2);
-        uin[in.length] = bytesToPad == 1 ? (byte) 0x86 : 0x06; // pad with suffix defined in FIPS 202 sec. 6.1
-        return sponge(uin, bitLen, bitLen*2);
-    }
-
-
-
 
 
     public static byte[] KMACXOF256(byte[] key, byte[] input, int outLength, String str) {
