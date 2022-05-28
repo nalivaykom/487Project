@@ -1,3 +1,4 @@
+import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 import java.util.*;
 
@@ -220,24 +221,24 @@ public class KMACXOF256 {
 
 
 
-
+        
 
         
-        byte[] testInt = new byte[8];
-        testInt[0] = 97;
-        testInt[1] = 99;
-        testInt[2] = 99;
-        testInt[3] = 117; //was 117
-        testInt[4] = 114;
-        testInt[5] = 97;
-        testInt[6] = 99;
-        testInt[7] = 121;
-        //testInt[8] = 23;
+        // byte[] testInt = new byte[10];
+        // testInt[0] = 97;
+        // testInt[1] = 99;
+        // testInt[2] = 99;
+        // testInt[3] = 117; //was 117
+        // testInt[4] = 114;
+        // testInt[5] = 97;
+        // testInt[6] = 99;
+        // testInt[7] = 121;
+        // testInt[8] = 23;
 
-        for (int i = 0; i < testInt.length; i++) {
-            System.out.println("originalMessage[" + i + "]: " + testInt[i]);
-        }
-        System.out.println();
+        // for (int i = 0; i < testInt.length; i++) {
+        //     testInt[i] = (byte) i;
+        // }
+
 
         // long temp = bytesToWord(0, testInt);
         // //System.out.println(temp);
@@ -264,7 +265,95 @@ public class KMACXOF256 {
         //     System.out.println(KMACOutput[i] ^ KMACOutput2[i]);
         // }
 
-        byte[] key = {1,2,3,4};
+        System.out.println();
+
+        long start = System.nanoTime();
+
+       
+
+        Scanner input = new Scanner(System.in);
+        System.out.print("Type a message you would like to encrypt: ");
+        String userInput = input.nextLine();
+
+        //String userInput = "hello my man, jennifer is an odd human being";
+        System.out.println("Message before encryption: " + userInput);
+
+        byte[] testInt = new byte[userInput.length()];
+
+        for (int i = 0; i < userInput.length(); i++) {
+            testInt[i] = (byte) userInput.charAt(i);
+        }
+
+
+        // for (int i = 0; i < testInt.length; i++) {
+        //     System.out.println("originalMessage[" + i + "]: " + testInt[i]);
+        // }
+        // System.out.println();
+
+
+        byte[] key = {1,2,3,4,75};
+        byte[] key2 = {1,2,3,4,75};
+
+        byte[][] symmetricCryptogram = encrypt(testInt, key);
+        byte[][] decryptedCryptogram = decrypt(key2, symmetricCryptogram[0], symmetricCryptogram[1], symmetricCryptogram[2]);
+        byte[] m = decryptedCryptogram[0];
+        byte[] t = symmetricCryptogram[2];
+        byte[] tPrime = decryptedCryptogram[1];
+        boolean acceptMessage = acceptMessage(t, tPrime);
+        // System.out.println("Should you accept this message: " + acceptMessage);
+
+        long finish = System.nanoTime();
+
+        long timeToFinish = finish - start;
+
+        //System.out.println("Time to finish: " + timeToFinish / 1000000 + " ms");
+
+        String finalOutput = "";
+            try {
+                finalOutput = new String(m, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        if (acceptMessage) {
+            System.out.println("Congratulations, your message has been successfully decrypted!");
+            
+            System.out.println("Your message is: " + finalOutput);
+        } else {
+            System.out.println("Uh Oh, Something went wrong...");
+            System.out.println("The message returned was: " + finalOutput);
+        }
+        System.out.println();
+
+        // 2.2ghz = 44 seconds
+        // 3.0ghz = 31 seconds
+        // 3.7ghz = 26 seconds (no tb)
+        // 3.9ghz = 26 seconds (no tb)
+        // 3.7ghz = 26 seconds
+        // 3.9ghz = 26 seconds
+
+        // 2.2ghz = 41205 ms
+        // 3.0ghz = 29819 ms
+        // 3.7ghz = 25009 ms (no tb)
+        // 3.9ghz = 25321 ms (no tb)
+        // 3.7ghz = 24808 ms
+        // 3.9ghz = 24714 ms
+
+        
+        // 2.2ghz = 162 ms
+        // 3.0ghz = 112 ms
+        // 3.7ghz = 91 ms
+        // 3.9ghz = 87 ms
+
+        //////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////
+        //decrypting      
+
+    }
+
+    public static byte[][] encrypt(byte[] testInt, byte[] key) {
+        byte[][] output = new byte[3][];
 
         SecureRandom random = new SecureRandom();
         byte[] z = new byte[64];
@@ -273,6 +362,10 @@ public class KMACXOF256 {
         byte[] z_key = new byte[z.length + key.length]; 
         System.arraycopy(z, 0, z_key, 0, z.length);
         System.arraycopy(key, 0, z_key, z.length, key.length);
+
+        // for (int i = 0; i < z_key.length; i++) {
+        //     System.out.println("z_key[" + i + "]: " + z_key[i]);
+        // }
 
         byte[] ke_ka = KMACXOF256(z_key, new byte[] {}, 1024, "S");
         byte[] ke = new byte[ke_ka.length / 2];
@@ -294,54 +387,111 @@ public class KMACXOF256 {
         // }
         
         
-
+        // System.out.println(ke.length);
         byte[] cTemp = KMACXOF256(ke, new byte[] {}, testInt.length * 8, "SKE");
         byte[] c = new byte[cTemp.length];
        
+        // System.out.println("cTemp length: " + cTemp.length);
+        // System.out.println("testInt length: " + testInt.length);
+        // for (int i = 0; i < testInt.length; i++) {
+        //     System.out.println("cTemp[" + i + "]: " + cTemp[i]);
+        //     System.out.println("testInt[" + i + "]: " + testInt[i]);
+
+        // }
+
         for (int i = 0; i < c.length; i++) {
             long cTempLong = (long) cTemp[i];
             long testIntLong = (long) testInt[i];
             c[i] = (byte) (cTempLong ^ testIntLong);
-            System.out.println("c[" + i + "]: " + c[i]);
+            // System.out.println("c[" + i + "]: " + c[i]);
         }
-        System.out.println();
+        // System.out.println();
 
         byte[] t = KMACXOF256(ka, testInt, 512, "SKA");
         // System.out.println("length of c: " + c.length);
         // System.out.println("length of testInt: " + testInt.length);
-        
 
-        //////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////
-        //decrypting
+        output[0] = z;
+        output[1] = c;
+        output[2] = t;
+        return output;
+    }
 
-        byte[] z_key2 = new byte[z.length + key.length]; 
+    public static byte[][] decrypt(byte[] key2, byte[] z, byte[] c, byte[] t) {
+        byte[][] output = new byte[2][];
+
+        byte[] z_key2 = new byte[z.length + key2.length]; 
         System.arraycopy(z, 0, z_key2, 0, z.length);
-        System.arraycopy(key, 0, z_key2, z.length, key.length);
+        System.arraycopy(key2, 0, z_key2, z.length, key2.length);
 
         byte[] ke_ka2 = KMACXOF256(z_key2, new byte[] {}, 1024, "S");
-        byte[] ke2 = new byte[ke_ka.length / 2];
-        byte[] ka2 = new byte[ke_ka.length / 2];
+        byte[] ke2 = new byte[ke_ka2.length / 2];
+        byte[] ka2 = new byte[ke_ka2.length / 2];
         
-        System.arraycopy(ke_ka, 0, ke, 0, ke.length);
-        System.arraycopy(ke_ka, ke.length, ka, 0, ka.length);
+        System.arraycopy(ke_ka2, 0, ke2, 0, ke2.length);
+        System.arraycopy(ke_ka2, ke2.length, ka2, 0, ka2.length);
 
-        byte[] mTemp = KMACXOF256(ke, new byte[] {}, c.length * 8, "SKE");
+        byte[] mTemp = KMACXOF256(ke2, new byte[] {}, c.length * 8, "SKE");
         byte[] m = new byte[mTemp.length];
         for (int i = 0; i < m.length; i++) {
             long mTempLong = (long) mTemp[i];
             long cLong = (long) c[i];
             m[i] = (byte) (mTempLong ^ cLong);
-            System.out.println("m[" + i + "]: " + m[i]);
+            // System.out.println("m[" + i + "]: " + m[i]);
         }
+
+
+        // String finalOutput = "";
+        // try {
+        //     finalOutput = new String(m, "UTF-8");
+        // } catch (UnsupportedEncodingException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // }
+        // System.out.println();
+        // System.out.print("Message after decryption: ");
+        // System.out.println(finalOutput);
         // System.out.println("length of mTemp= " + mTemp.length);
         // System.out.println("length of c= " + c.length);
 
+
+        byte[] tPrime = KMACXOF256(ka2, m, 512, "SKA");
+
+        System.out.println();
+
+        // boolean testBool = true;
+        // for (int i = 0; i < t.length; i++) {
+        //     System.out.println("t[" + i + "]: " + t[i]);
+        //     System.out.println("tPrime[" + i + "]: " + tPrime[i]);
+        //     //System.out.println("ka: " + ka[i]);
+        //     //System.out.println("ka2: " + ka2[i]);
+        //     if (t[i] != tPrime[i]) {
+        //         System.out.println(i);
+        //         testBool = false;
+        //     }
+        // }
+        // System.out.println("testBool = " + testBool);
+
+        // for (int i = 0; i < t.length; i++) {
+            
+        // }  
+
+        output[0] = m;
+        output[1] = tPrime;
+
+        return output;
+
     }
 
-
-
-
+    public static boolean acceptMessage(byte[] t, byte[] tPrime) {
+        boolean returnBool = true;
+        for (int i = 0; i < t.length; i++) {
+            if (t[i] != tPrime[i]) {
+                returnBool = false;
+            }
+        }
+        return returnBool;
+    }
 
     public static byte[] KMACXOF256(byte[] key, byte[] input, int outLength, String str) {
         
@@ -643,9 +793,10 @@ public class KMACXOF256 {
 
     private static byte[] wordToBytes(long input) {
         String temp = Long.toBinaryString(input);
-        while (temp.length() < 64) {
+        while (temp.length() % 8 != 0) {
             temp = "0" + temp;
         }
+        //System.out.println("wordToBytes binarystring temp: " + temp.length());
         String[] stringArr = new String[temp.length() / 8];
         int ofs = 0;
         int i = 0;
@@ -705,17 +856,42 @@ public class KMACXOF256 {
         return output;
     }
 
-    public static byte[] stateToByteArray(long[] input, int outLength) {
-        byte[] output = new byte[outLength / 8];
-        int index = 0;
-        int ofs = 0;
-        while (index * 64 < outLength) {
-            long word = input[index];
-            byte[] temp = wordToBytes(word);
-            System.arraycopy(temp, 0, output, ofs, temp.length);
-            ofs = ofs + 8;
-            index++;
-        }
-        return output;
+    // public static byte[] stateToByteArray(long[] input, int outLength) {
+    //     byte[] output = new byte[outLength / 8];
+    //     // System.out.println();
+    //     // System.out.println(outLength/8);
+    //     // System.out.println("output length: " + output.length / 8);
+    //     // System.out.println();
+    //     int index = 0;
+    //     int ofs = 0;
+    //     while ((index * 64 < outLength)) {
+    //         if (index < outLength / 8) {
+    //             // System.out.println(ofs < output.length);
+    //             long word = input[index];
+    //             byte[] temp = wordToBytes(word);
+    //             // System.out.println("temp.length: " + temp.length);
+    //             System.arraycopy(temp, 0, output, ofs, temp.length);
+    //             ofs = ofs + 1;
+    //             index++;
+    //             // System.out.println("index: " + index);
+    //             // System.out.println("ofs: " + ofs);
+    //         }
+    //     }
+    //     return output;
+    // }
+    private static byte[] stateToByteArray(long[] state, int bitLen) {
+        if (state.length*64 < bitLen) throw new IllegalArgumentException("State is of insufficient length to produced desired bit length.");
+        byte[] out = new byte[bitLen/8];
+        int wrdInd = 0;
+        while (wrdInd*64 < bitLen) {
+            long word = state[wrdInd++];
+            int fill = wrdInd*64 > bitLen ? (bitLen - (wrdInd - 1) * 64) / 8 : 8;
+            for (int b = 0; b < fill; b++) {
+                byte ubt = (byte) (word>>>(8*b) & 0xFF);
+                out[(wrdInd - 1)*8 + b] = ubt;
+            }
+        } 
+
+        return out;
     }
 }
