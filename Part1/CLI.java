@@ -276,6 +276,24 @@ public class CLI extends ellipticCurve{
         BigInteger y = pair.y;
         byte[] yArr = y.toByteArray();
 
+        Cryptogram crypt = encryptEC(s, pair);
+
+        ECPoint Z = crypt.Z;
+        BigInteger x2 = Z.x;
+        byte[] x2Bytes = x2.toByteArray();
+        BigInteger y2 = Z.y;
+        byte[] y2Bytes = y2.toByteArray();
+        byte[] c = crypt.c;
+        byte[] t = crypt.t;
+
+        Path path = Paths.get(root.toAbsolutePath() + "/Part1/Storage/ECPoint/EncryptedS/ECPoint/x.txt");
+        Files.write(path, x2Bytes);
+        Path path2 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/ECPoint/EncryptedS/ECPoint/y.txt");
+        Files.write(path2, y2Bytes);
+        Path path3 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/ECPoint/EncryptedS/ECPoint/c.txt");
+        Files.write(path3, c);
+        Path path4 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/ECPoint/EncryptedS/ECPoint/t.txt");
+        Files.write(path4, t);
 
 //                    Path path13 = Paths.get("C:/temp/ECPoint/x.txt");
 //                    byte[] returnBytes = Files.readAllBytes(path13);
