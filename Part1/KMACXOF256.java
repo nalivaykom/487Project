@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 import java.util.*;
@@ -29,7 +30,7 @@ public class KMACXOF256 {
     private static byte[] KEY = {1, 2, 3, 4};
     private enum ENCODE {Left, Right}
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         
         //System.out.println("hello world");
         /*
@@ -350,6 +351,10 @@ public class KMACXOF256 {
         //////////////////////////////////////////////////////////////////
         //decrypting      
 
+    }
+
+    public static byte[] hash(byte[] m) {
+        return KMACXOF256(new byte[] {}, m, 512, "D");
     }
 
     public static byte[][] encrypt(byte[] testInt, byte[] key) {
