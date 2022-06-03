@@ -28,7 +28,32 @@ public class ECPoint {
         BigInteger p = new BigInteger("2");
         p = p.pow(521);
         p = p.subtract(new BigInteger("1"));
-        this.y = sqrt(x, p, true);
+        System.out.println("p = " + p);
+
+        BigInteger one = BigInteger.ONE;
+        System.out.println("one: " + one);
+
+        BigInteger xSquared = x.multiply(x);
+        System.out.println("xSquared = " + xSquared);
+        BigInteger oneMinusXSquared = (BigInteger.ONE).subtract(xSquared);
+        System.out.println("oneMinusXSquared = " + oneMinusXSquared);
+        BigInteger d = (BigInteger.valueOf(376014L));
+        System.out.println("d = " + d);
+        BigInteger dXSquared = d.multiply(xSquared);
+        System.out.println("dXSquared = " + dXSquared);
+        BigInteger onePlusDXSquared = (BigInteger.ONE).add(dXSquared);
+        System.out.println("onePlusDXSquared = " + onePlusDXSquared);
+
+//        BigInteger bMIp = onePlusDXSquared.modInverse(p);
+//        BigInteger aMbMIp = oneMinusXSquared.multiply(bMIp);
+//        BigInteger aMbMIpmodp = aMbMIp.mod(p);
+//        System.out.println("wholeThing different = " + aMbMIpmodp);
+
+        BigInteger wholeThing = (oneMinusXSquared.multiply(onePlusDXSquared.modInverse(p)).mod(p));
+        System.out.println("wholeThing = " + wholeThing);
+
+        this.y = sqrt(wholeThing, p, false).mod(p);
+        //this.y = new BigInteger("3832365545844557255247407452492276489648660861956878854823428409796421008857878243727634210686791507168493732364650567836638782015285562571568855063494635788");
     }
 
     public void setS(byte[] s) {
@@ -57,6 +82,7 @@ public class ECPoint {
             return BigInteger.ZERO;
         }
         BigInteger r = v.modPow(p.shiftRight(2).add(BigInteger.ONE), p);
+        System.out.println("r = " + r);
         if (r.testBit(0) != lsb) {
             r = p.subtract(r); // correct the lsb
         }

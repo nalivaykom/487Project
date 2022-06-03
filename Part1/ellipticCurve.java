@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.sql.SQLOutput;
 import java.util.BitSet;
 import java.util.Scanner;
 
@@ -33,6 +34,8 @@ public class ellipticCurve extends KMACXOF256 {
 //        for (int i = 0; i < returnBytes.length; i++) {
 //            System.out.println("returnBytes[" + i + "] = " + returnBytes[i]);
 //        }
+
+
         String abc = "1000100101001110111010100000010010010010010001010111011001000111000011000100010000001111010110101110111111001111100011001011111101000000111001100100000000111001110101110011101001111110111011101010111010111101101010100100011010111100111001110011010101001010000011101001100111111101001100011100100000110011100000100111110010001111001011111001101010111001101011010100001101001110001101011001101101111001101100000111111001101001101011001001111001100011001010010100010010101111000010001111111100110010011100000000000100";
         System.out.println("abc length = " + abc.length());
 
@@ -72,6 +75,8 @@ public class ellipticCurve extends KMACXOF256 {
         }
         System.out.println("got to where finalOutput should be printed");
         System.out.println(finalOutput);
+
+
 //        BigInteger p = new BigInteger("2");
 //        p = p.pow(521);
 //        p.subtract(new BigInteger("1"));
@@ -92,6 +97,22 @@ public class ellipticCurve extends KMACXOF256 {
 //        BigInteger[] zzz = addPoints(z, zz);
 //        System.out.println("zzz[0] = " + zz[0]);
 //        System.out.println("zzz[1] = " + zz[1]);
+
+
+
+
+
+//        ECPoint G = new ECPoint(BigInteger.valueOf(4L));
+//        String name = "G";
+//        printECPoint(name, G);
+//
+//        ECPoint G2 = addPoints(G, G);
+//        String name2 = "G2";
+//        printECPoint(name2, G2);
+//
+//        ECPoint G3 = scalarMultiply(BigInteger.valueOf(2L), G);
+//        String name3 = "G3";
+//        printECPoint(name3, G3);
 
 
 
@@ -160,7 +181,7 @@ public class ellipticCurve extends KMACXOF256 {
 
         ECPoint W = scalarMultiply(bigKx4, V);
 
-        ECPoint G = new ECPoint(BigInteger.valueOf(4), BigInteger.valueOf(16));
+        ECPoint G = new ECPoint(BigInteger.valueOf(4));
         ECPoint Z = scalarMultiply(bigKx4, G);
 
         BigInteger Wx = W.x;
@@ -207,62 +228,53 @@ public class ellipticCurve extends KMACXOF256 {
 //        G[0] = new BigInteger("4");
 //        G[1] = new BigInteger("16");
 
-        ECPoint G = new ECPoint(BigInteger.valueOf(4), BigInteger.valueOf(16));
+        ECPoint G = new ECPoint(BigInteger.valueOf(4L));
 
         //BigInteger[][] return2dBig = new BigInteger[2][];
         //return2dBig[0] = sArr;
         //return2dBig[1] = scalarMultiply(sInt2, G);
 
         ECPoint returnPoint = scalarMultiply(sInt2, G);
-        returnPoint.setS(s);
+        returnPoint.s = s;
         return returnPoint;
     }
-//     public static ECPoint scalarMultiply(BigInteger big, ECPoint P) {
-//         // s = (sk sk-1 … s1 s0)2, sk = 1.
+     public static ECPoint scalarMultiply(BigInteger big, ECPoint P) {
+         // s = (sk sk-1 … s1 s0)2, sk = 1.
+
+         int k = big.bitLength();
+         ECPoint V = new ECPoint(BigInteger.ZERO, BigInteger.ONE); // initialize with sk*P, which is simply P
+         for (int i = k - 1; i >= 0; i--) { // scan over the k bits of s
+             V = addPoints(V, V); //V = V.add(V); // invoke the Edwards point addition formula
+             if (big.testBit(i)) { //if (resultBig.charAt(i) == '1') { // test the i-th bit of s
+                 V = addPoints(V, P); //V = V.add(P); // invoke the Edwards point addition formula
+             }
+         }
+         return V; // now finally V = s*P
+     }
+
+//    public static ECPoint scalarMultiply(BigInteger big, ECPoint P) {
+//        // s = (sk sk-1 … s1 s0)2, sk = 1.
 //
-//         String resultBig = big.toString(2);
-//         System.out.println("resultBig = " + resultBig);
-//         if ('-' == resultBig.charAt(0)) {
-//             resultBig = resultBig.substring(1);
-//         }
+//        String resultBig = big.toString(2);
+//        System.out.println("resultBig = " + resultBig);
+//        if ('-' == resultBig.charAt(0)) {
+//            resultBig = resultBig.substring(1);
+//        }
 ////         System.out.println(resultBig);
 //
-//         int k = resultBig.length();
-//
-//         ECPoint V = P; // initialize with sk*P, which is simply P
-//         for (int i = k - 1; i >= 0; i--) { // scan over the k bits of s
-//             V = addPoints(V, V); //V = V.add(V); // invoke the Edwards point addition formula
-//             if (resultBig.charAt(i) == '1') { // test the i-th bit of s
-//                 //System.out.println("////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////");
-//                 V = addPoints(V, P); //V = V.add(P); // invoke the Edwards point addition formula
-//             }
-//         }
-//         return V; // now finally V = s*P
-//     }
-
-    public static ECPoint scalarMultiply(BigInteger big, ECPoint P) {
-        // s = (sk sk-1 … s1 s0)2, sk = 1.
-
-        String resultBig = big.toString(2);
-        System.out.println("resultBig = " + resultBig);
-        if ('-' == resultBig.charAt(0)) {
-            resultBig = resultBig.substring(1);
-        }
-//         System.out.println(resultBig);
-
-        int k = resultBig.length();
-        ECPoint res = new ECPoint(BigInteger.ZERO, BigInteger.ONE);
-        ECPoint temp = P; // initialize with sk*P, which is simply P
-        for (int i = 0; i < k; i++) { // scan over the k bits of s
-            temp = addPoints(temp, temp); //V = V.add(V); // invoke the Edwards point addition formula
-            if (resultBig.charAt(i) == '1') { // test the i-th bit of s
-                //System.out.println("////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////");
-                res = addPoints(res, temp); //V = V.add(P); // invoke the Edwards point addition formula
-            }
+//        int k = resultBig.length();
+//        ECPoint res = new ECPoint(BigInteger.ZERO, BigInteger.ONE);
+//        ECPoint temp = P; // initialize with sk*P, which is simply P
+//        for (int i = 0; i < k; i++) { // scan over the k bits of s
 //            temp = addPoints(temp, temp); //V = V.add(V); // invoke the Edwards point addition formula
-        }
-        return res; // now finally V = s*P
-    }
+//            if (resultBig.charAt(i) == '1') { // test the i-th bit of s
+//                //System.out.println("////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////");
+//                res = addPoints(res, temp); //V = V.add(P); // invoke the Edwards point addition formula
+//            }
+////            temp = addPoints(temp, temp); //V = V.add(V); // invoke the Edwards point addition formula
+//        }
+//        return res; // now finally V = s*P
+//    }
 
     //assuming done
     public static ECPoint addPoints(ECPoint p1, ECPoint p2) {
@@ -326,6 +338,11 @@ public class ellipticCurve extends KMACXOF256 {
         }
 
         return returnString;
+    }
+
+    public static void printECPoint(String str, ECPoint point) {
+        System.out.print(str + " = ");
+        System.out.println("{" + point.x + ", " + point.y + "}");
     }
 
 
