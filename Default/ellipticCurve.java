@@ -142,6 +142,7 @@ public class ellipticCurve extends KMACXOF256 {
         System.arraycopy(h, 0, newH, 1, h.length);
         newH[0] = (byte) 0;
         BigInteger newHBig = new BigInteger(newH);
+        //BigInteger r = new
 
 
         return new Signature(new byte[] {}, BigInteger.ONE);

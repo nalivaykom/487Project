@@ -45,12 +45,12 @@ public class CLI extends ellipticCurve{
 
                         if ("1".equals(choice)) {
                             System.out.println("Hashing from file");
-                            Path path = Paths.get(root.toAbsolutePath() + "/Part1/Storage/inputFile.txt");
+                            Path path = Paths.get(root.toAbsolutePath() + "/Default/Storage/inputFile.txt");
                             byte[] data = Files.readAllBytes(path);
 
                             byte[] hash = hash(data);
 
-                            Path path2 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/hash.txt");
+                            Path path2 = Paths.get(root.toAbsolutePath() + "/Default/Storage/hash.txt");
                             Files.write(path2, hash);
                             chose1or2 = true;
                         } else if ("2".equals(choice)) {
@@ -65,7 +65,7 @@ public class CLI extends ellipticCurve{
                             }
 
                             byte[] hash = hash(toBeHashedBytes);
-                            Path path2 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/hash.txt");
+                            Path path2 = Paths.get(root.toAbsolutePath() + "/Default/Storage/hash.txt");
                             Files.write(path2, hash);
 
                             System.out.println("text has been hashed to a file");
@@ -81,21 +81,21 @@ public class CLI extends ellipticCurve{
                     System.out.println();
                     System.out.println("Chose 2");
 
-                    Path path = Paths.get(root.toAbsolutePath() + "/Part1/Storage/inputFile.txt");
+                    Path path = Paths.get(root.toAbsolutePath() + "/Default/Storage/inputFile.txt");
                     byte[] data = Files.readAllBytes(path);
 
-                    Path path2 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/pw.txt");
+                    Path path2 = Paths.get(root.toAbsolutePath() + "/Default/Storage/pw.txt");
                     byte[] pw = Files.readAllBytes(path2);
 
                     byte[][] encryptedData = encrypt(data, pw);
 
-                    Path path3 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/encrypted/Z.txt");
+                    Path path3 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encrypted/Z.txt");
                     Files.write(path3, encryptedData[0]);
 
-                    Path path4 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/encrypted/c.txt");
+                    Path path4 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encrypted/c.txt");
                     Files.write(path4, encryptedData[1]);
 
-                    Path path5 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/encrypted/t.txt");
+                    Path path5 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encrypted/t.txt");
                     Files.write(path5, encryptedData[2]);
 
                     System.out.println("File has been encrypted to encrypted folder");
@@ -107,16 +107,16 @@ public class CLI extends ellipticCurve{
                     System.out.println();
                     System.out.println("Chose 3");
 
-                    Path path6 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/encrypted/Z.txt");
+                    Path path6 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encrypted/Z.txt");
                     byte[] Z = Files.readAllBytes(path6);
 
-                    Path path7 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/encrypted/c.txt");
+                    Path path7 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encrypted/c.txt");
                     byte[] c = Files.readAllBytes(path7);
 
-                    Path path8 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/encrypted/t.txt");
+                    Path path8 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encrypted/t.txt");
                     byte[] t = Files.readAllBytes(path8);
 
-                    Path path9 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/pw2.txt");
+                    Path path9 = Paths.get(root.toAbsolutePath() + "/Default/Storage/pw2.txt");
                     byte[] pw2 = Files.readAllBytes(path9);
 
                     byte[][] decrypted = decrypt(pw2, Z, c, t);
@@ -127,7 +127,7 @@ public class CLI extends ellipticCurve{
                     boolean acceptMessage = acceptMessage(t, tPrime);
 
                     if (acceptMessage) {
-                        Path path10 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/decrypted/message.txt");
+                        Path path10 = Paths.get(root.toAbsolutePath() + "/Default/Storage/decrypted/message.txt");
                         Files.write(path10, m);
                         System.out.println("Message accepted and written to file");
                         System.out.println("Message written to file: ");
@@ -164,7 +164,7 @@ public class CLI extends ellipticCurve{
                     while (!choseValid) {
                         if ("1".equals(choice)) {
                             System.out.println("chose 1");
-                            Path path11 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/inputFile.txt");
+                            Path path11 = Paths.get(root.toAbsolutePath() + "/Default/Storage/inputFile.txt");
                             data2 = Files.readAllBytes(path11);
                             choseValid = true;
                         } else if ("2".equals(choice)) {
@@ -182,14 +182,14 @@ public class CLI extends ellipticCurve{
 
                     }
 
-//                    Path path11 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/inputFile.txt");
+//                    Path path11 = Paths.get(root.toAbsolutePath() + "/Default/Storage/inputFile.txt");
 //                    byte[] data2 = Files.readAllBytes(path11);
 
-                    Path path13 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/ECPoint/x.txt");
+                    Path path13 = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/x.txt");
                     byte[] xBytes = Files.readAllBytes(path13);
                     BigInteger x = new BigInteger(xBytes);
 
-                    Path path14 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/ECPoint/y.txt");
+                    Path path14 = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/y.txt");
                     byte[] yBytes = Files.readAllBytes(path14);
                     BigInteger y = new BigInteger(yBytes);
 
@@ -208,16 +208,16 @@ public class CLI extends ellipticCurve{
                     byte[] c2 = crypt.c;
                     byte[] t2 = crypt.t;
 
-                    Path path16 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/encryptedEC/ECPoint/x.txt");
+                    Path path16 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encryptedEC/ECPoint/x.txt");
                     Files.write(path16, xArr2);
 
-                    Path path17 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/encryptedEC/ECPoint/y.txt");
+                    Path path17 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encryptedEC/ECPoint/y.txt");
                     Files.write(path17, yArr2);
 
-                    Path path18 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/encryptedEC/c.txt");
+                    Path path18 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encryptedEC/c.txt");
                     Files.write(path18, c2);
 
-                    Path path19 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/encryptedEC/t.txt");
+                    Path path19 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encryptedEC/t.txt");
                     Files.write(path19, t2);
 
                     System.out.println("Cryptogram has been stored into files");
@@ -229,25 +229,25 @@ public class CLI extends ellipticCurve{
                     System.out.println();
                     System.out.println("Chose 6");
 
-                    Path path20 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/encryptedEC/ECPoint/x.txt");
+                    Path path20 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encryptedEC/ECPoint/x.txt");
                     byte[] x3 = Files.readAllBytes(path20);
                     BigInteger x3Big = new BigInteger(x3);
 
-                    Path path21 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/encryptedEC/ECPoint/y.txt");
+                    Path path21 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encryptedEC/ECPoint/y.txt");
                     byte[] y3 = Files.readAllBytes(path21);
                     BigInteger y3Big = new BigInteger(y3);
 
-                    Path path22 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/encryptedEC/c.txt");
+                    Path path22 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encryptedEC/c.txt");
                     byte[] c3 = Files.readAllBytes(path22);
 
-                    Path path23 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/encryptedEC/t.txt");
+                    Path path23 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encryptedEC/t.txt");
                     byte[] t3 = Files.readAllBytes(path23);
 
                     ECPoint currentPoint = new ECPoint(x3Big, y3Big);
 
                     Cryptogram currentCrypt = new Cryptogram(currentPoint, c3, t3);
 
-                    Path path24 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/pw2.txt");
+                    Path path24 = Paths.get(root.toAbsolutePath() + "/Default/Storage/pw2.txt");
                     byte[] pwTwo = Files.readAllBytes(path24);
 
                     ReturnMessage returnMessage = decryptEC(currentCrypt, pwTwo);
@@ -256,7 +256,7 @@ public class CLI extends ellipticCurve{
                     boolean verified = returnMessage.verified;
                     System.out.println("verified: " + verified);
                     if (verified) {
-                        Path path25 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/decryptedEC/message.txt");
+                        Path path25 = Paths.get(root.toAbsolutePath() + "/Default/Storage/decryptedEC/message.txt");
                         Files.write(path25, m2);
                         System.out.println("Message accepted and written to file");
                         System.out.println("Message written to file: ");
@@ -292,7 +292,7 @@ public class CLI extends ellipticCurve{
 
         Path root = Paths.get("");
 
-        Path path10 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/pw.txt");
+        Path path10 = Paths.get(root.toAbsolutePath() + "/Default/Storage/pw.txt");
         byte[] pw3 = Files.readAllBytes(path10);
 
         ECPoint pair = generatePair(pw3);
@@ -313,13 +313,13 @@ public class CLI extends ellipticCurve{
         byte[] c = crypt.c;
         byte[] t = crypt.t;
 
-        Path path = Paths.get(root.toAbsolutePath() + "/Part1/Storage/ECPoint/EncryptedS/ECPoint/x.txt");
+        Path path = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/EncryptedS/ECPoint/x.txt");
         Files.write(path, x2Bytes);
-        Path path2 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/ECPoint/EncryptedS/ECPoint/y.txt");
+        Path path2 = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/EncryptedS/ECPoint/y.txt");
         Files.write(path2, y2Bytes);
-        Path path3 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/ECPoint/EncryptedS/ECPoint/c.txt");
+        Path path3 = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/EncryptedS/ECPoint/c.txt");
         Files.write(path3, c);
-        Path path4 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/ECPoint/EncryptedS/ECPoint/t.txt");
+        Path path4 = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/EncryptedS/ECPoint/t.txt");
         Files.write(path4, t);
 
 //                    Path path13 = Paths.get("C:/temp/ECPoint/x.txt");
@@ -329,13 +329,13 @@ public class CLI extends ellipticCurve{
 //                    System.out.println("returnBig = " + returnBig);
 
 
-        Path path11 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/ECPoint/s.txt");
+        Path path11 = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/s.txt");
         Files.write(path11, s);
 
-        Path path12 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/ECPoint/x.txt");
+        Path path12 = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/x.txt");
         Files.write(path12, xArr);
 
-        Path path13 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/ECPoint/y.txt");
+        Path path13 = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/y.txt");
         Files.write(path13, yArr);
 
         System.out.println("Pair has been generated and stored in file");
