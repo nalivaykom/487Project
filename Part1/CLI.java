@@ -124,9 +124,9 @@ public class CLI extends ellipticCurve{
                     byte[] m = decrypted[0];
                     byte[] tPrime = decrypted[1];
 
-                    boolean acceptMesssage = acceptMessage(t, tPrime);
+                    boolean acceptMessage = acceptMessage(t, tPrime);
 
-                    if (acceptMesssage) {
+                    if (acceptMessage) {
                         Path path10 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/decrypted/message.txt");
                         Files.write(path10, m);
                         System.out.println("Message accepted and written to file");

@@ -123,6 +123,7 @@ public class ellipticCurve extends KMACXOF256 {
         byte[] newS = new byte[65];
         System.arraycopy(s, 0, newS, 1, s.length);
         newS[0] = (byte) 0;
+        BigInteger newSBig = new BigInteger(newS);
 
         byte[] k = KMACXOF256(newS, m, 512, "N");
         byte[] newK = new byte[65];
@@ -131,8 +132,16 @@ public class ellipticCurve extends KMACXOF256 {
 
         ECPoint G = new ECPoint(BigInteger.valueOf(4L));
         BigInteger newKBig = new BigInteger(newK);
-        ECPoint U = scalarMultiply(newKBig, G);
 
+        ECPoint U = scalarMultiply(newKBig, G);
+        BigInteger Ux = U.x;
+        byte[] UxBytes = Ux.toByteArray();
+
+        byte[] h = KMACXOF256(UxBytes, m, 512, "T");
+        byte[] newH = new byte[65];
+        System.arraycopy(h, 0, newH, 1, h.length);
+        newH[0] = (byte) 0;
+        BigInteger newHBig = new BigInteger(newH);
 
 
         return new Signature(new byte[] {}, BigInteger.ONE);
