@@ -28,53 +28,18 @@ public class ECPoint {
         BigInteger p = new BigInteger("2");
         p = p.pow(521);
         p = p.subtract(new BigInteger("1"));
-//        System.out.println("p = " + p);
 
         BigInteger one = BigInteger.ONE;
-//        System.out.println("one: " + one);
 
         BigInteger xSquared = x.multiply(x);
-        //System.out.println("xSquared = " + xSquared);
         BigInteger oneMinusXSquared = (BigInteger.ONE).subtract(xSquared);
-        //System.out.println("oneMinusXSquared = " + oneMinusXSquared);
         BigInteger d = (BigInteger.valueOf(376014L));
-        //System.out.println("d = " + d);
         BigInteger dXSquared = d.multiply(xSquared);
-       // System.out.println("dXSquared = " + dXSquared);
         BigInteger onePlusDXSquared = (BigInteger.ONE).add(dXSquared);
-        //System.out.println("onePlusDXSquared = " + onePlusDXSquared);
-
-//        BigInteger bMIp = onePlusDXSquared.modInverse(p);
-//        BigInteger aMbMIp = oneMinusXSquared.multiply(bMIp);
-//        BigInteger aMbMIpmodp = aMbMIp.mod(p);
-//        System.out.println("wholeThing different = " + aMbMIpmodp);
 
         BigInteger wholeThing = (oneMinusXSquared.multiply(onePlusDXSquared.modInverse(p)).mod(p));
-        //System.out.println("wholeThing = " + wholeThing);
 
         this.y = sqrt(wholeThing, p, false).mod(p);
-        //System.out.println("the thing that we care about = " + this.y);
-        //this.y = new BigInteger("3832365545844557255247407452492276489648660861956878854823428409796421008857878243727634210686791507168493732364650567836638782015285562571568855063494635788");
-    }
-
-    public void setS(byte[] s) {
-        this.s = s;
-    }
-    public void setX(BigInteger x) {
-        this.x = x;
-    }
-    public void setY(BigInteger y) {
-        this.y = y;
-    }
-
-    public byte[] getS() {
-        return this.s;
-    }
-    public BigInteger getX() {
-        return this.x;
-    }
-    public BigInteger getY() {
-        return this.y;
     }
 
     public static BigInteger sqrt(BigInteger v, BigInteger p, boolean lsb) {

@@ -1,17 +1,18 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class CLI extends ellipticCurve{
+
     public static void main(String[] args) throws IOException {
+
         boolean keepGoing = true;
         Scanner input = new Scanner(System.in);
+
         while (keepGoing) {
             System.out.println("Welcome to our encryption software");
             System.out.println("Enter '1' to compute a plain cryptographic hash of a given file");
@@ -24,27 +25,27 @@ public class CLI extends ellipticCurve{
             System.out.println("Enter '8' to verify a given data file and its signature file under a given public key file");
             System.out.println("Enter '9' to Exit");
 
-
             Path root = Paths.get("");
 
             System.out.println();
             System.out.print("Select option: ");
             String userInput = input.nextLine();
 
-
             switch (userInput) {
                 case "1":
 
-                    System.out.println();
                     System.out.println("Chose 1");
                     boolean chose1or2 = false;
                     while (!chose1or2) {
 
+                        System.out.println();
                         System.out.print("Would you like to hash from a file or CLI? '1' for file, '2' for CLI: ");
                         String choice = input.nextLine();
 
                         if ("1".equals(choice)) {
-                            System.out.println("Hashing from file");
+                            System.out.println("Please make sure that your message is saved into inputFile.txt, then press enter:");
+                            input.nextLine();
+                            System.out.println("Hashing from file...");
                             Path path = Paths.get(root.toAbsolutePath() + "/Default/Storage/inputFile.txt");
                             byte[] data = Files.readAllBytes(path);
 
@@ -52,11 +53,13 @@ public class CLI extends ellipticCurve{
 
                             Path path2 = Paths.get(root.toAbsolutePath() + "/Default/Storage/hash.txt");
                             Files.write(path2, hash);
+                            System.out.println("Finished hashing");
+                            System.out.println();
                             chose1or2 = true;
+
                         } else if ("2".equals(choice)) {
 
                             System.out.print("Type a message you would like to encrypt: ");
-                            String textToBeHashed = input.nextLine();
 
                             byte[] toBeHashedBytes = new byte[userInput.length()];
 
@@ -68,11 +71,27 @@ public class CLI extends ellipticCurve{
                             Path path2 = Paths.get(root.toAbsolutePath() + "/Default/Storage/hash.txt");
                             Files.write(path2, hash);
 
-                            System.out.println("text has been hashed to a file");
+                            System.out.println("Text has been hashed to a file");
+                            System.out.println();
 
                             chose1or2 = true;
                         } else {
                             System.out.println("Please select 1 or 2");
+                        }
+                    }
+
+                    boolean validR1 = false;
+                    while (!validR1) {
+                        System.out.print("Would you like to continue using using the program? ('y' or 'n') : ");
+                        String response1 = input.nextLine().toLowerCase(Locale.ROOT);
+                        if ("y".equals(response1)) {
+                            validR1 = true;
+                        } else if ("n".equals(response1)) {
+                            keepGoing = false;
+                            validR1 = true;
+                            input.close();
+                        } else {
+                            System.out.println("please enter 'y' or 'n'");
                         }
                     }
                     break;
@@ -80,6 +99,10 @@ public class CLI extends ellipticCurve{
 
                     System.out.println();
                     System.out.println("Chose 2");
+
+                    System.out.println("Please make sure that your message is saved into inputFile.txt");
+                    System.out.println("and your passphrase is stored in pw.txt, then press enter:");
+                    input.nextLine();
 
                     Path path = Paths.get(root.toAbsolutePath() + "/Default/Storage/inputFile.txt");
                     byte[] data = Files.readAllBytes(path);
@@ -101,11 +124,29 @@ public class CLI extends ellipticCurve{
                     System.out.println("File has been encrypted to encrypted folder");
                     System.out.println();
 
+                    boolean validR2 = false;
+                    while (!validR2) {
+                        System.out.print("Would you like to continue using using the program? ('y' or 'n') : ");
+                        String response2 = input.nextLine().toLowerCase(Locale.ROOT);
+                        if ("y".equals(response2)) {
+                            validR2 = true;
+                        } else if ("n".equals(response2)) {
+                            keepGoing = false;
+                            validR2 = true;
+                            input.close();
+                        } else {
+                            System.out.println("please enter 'y' or 'n'");
+                        }
+                    }
+
                     break;
                 case "3":
 
-                    System.out.println();
                     System.out.println("Chose 3");
+                    System.out.println();
+
+                    System.out.println("Please make sure that your passphrase is stored in pw2.txt, then press enter:");
+                    input.nextLine();
 
                     Path path6 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encrypted/Z.txt");
                     byte[] Z = Files.readAllBytes(path6);
@@ -127,17 +168,39 @@ public class CLI extends ellipticCurve{
                     boolean acceptMessage = acceptMessage(t, tPrime);
 
                     if (acceptMessage) {
-                        Path path10 = Paths.get(root.toAbsolutePath() + "/Default/Storage/decrypted/message.txt");
+                        Path path10 = Paths.get(root.toAbsolutePath() + "/Default/Storage/decryptedMessage.txt");
                         Files.write(path10, m);
-                        System.out.println("Message accepted and written to file");
+                        System.out.println("Message accepted and written to 'decryptedMessage.txt'");
                         System.out.println("Message written to file: ");
                         String mString = new String(m, "UTF-8");
                         System.out.println(mString);
 
                     } else {
                         System.out.println("Message not accepted, something went wrong");
+                        System.out.println("Message received was: ");
+                        String mString = new String(m, "UTF-8");
+                        System.out.println(mString);
                     }
                     System.out.println();
+
+                    byte[] tag = generateTag(m, pw2);
+                    Path path100 = Paths.get(root.toAbsolutePath() + "/Default/Storage/tag.txt");
+                    Files.write(path100, tag);
+
+                    boolean validR3 = false;
+                    while (!validR3) {
+                        System.out.print("Would you like to continue using using the program? ('y' or 'n') : ");
+                        String response3 = input.nextLine().toLowerCase(Locale.ROOT);
+                        if ("y".equals(response3)) {
+                            validR3 = true;
+                        } else if ("n".equals(response3)) {
+                            keepGoing = false;
+                            validR3 = true;
+                            input.close();
+                        } else {
+                            System.out.println("please enter 'y' or 'n'");
+                        }
+                    }
 
                     break;
                 case "4":
@@ -147,15 +210,30 @@ public class CLI extends ellipticCurve{
 
                     generatePairToFiles();
 
+                    System.out.println("Pair has been generated and stored in file");
+                    System.out.println();
+
+                    boolean validR4 = false;
+                    while (!validR4) {
+                        System.out.print("Would you like to continue using using the program? ('y' or 'n') : ");
+                        String response4 = input.nextLine().toLowerCase(Locale.ROOT);
+                        if ("y".equals(response4)) {
+                            validR4 = true;
+                        } else if ("n".equals(response4)) {
+                            keepGoing = false;
+                            validR4 = true;
+                            input.close();
+                        } else {
+                            System.out.println("please enter 'y' or 'n'");
+                        }
+                    }
+
                     break;
                 case "5":
 
-                    System.out.println();
                     System.out.println("Chose 5");
-
-                    generatePairToFiles();
-
                     System.out.println();
+
                     System.out.print("Would you like to use file input or console input? ('1' for file, '2' for console) ");
                     String choice = input.nextLine();
 
@@ -164,6 +242,9 @@ public class CLI extends ellipticCurve{
                     while (!choseValid) {
                         if ("1".equals(choice)) {
                             System.out.println("chose 1");
+                            System.out.println("Please make sure that your message is saved into inputFile.txt");
+                            System.out.println("and your passphrase is stored in pw.txt, then press enter:");
+                            input.nextLine();
                             Path path11 = Paths.get(root.toAbsolutePath() + "/Default/Storage/inputFile.txt");
                             data2 = Files.readAllBytes(path11);
                             choseValid = true;
@@ -172,6 +253,8 @@ public class CLI extends ellipticCurve{
                             System.out.print("Please enter your message: ");
                             String inputString = input.nextLine();
                             data2 = inputString.getBytes();
+                            System.out.println("Please make sure that your passphrase is stored in pw.txt, then press enter:");
+                            input.nextLine();
                             choseValid = true;
                         } else {
                             System.out.println("please choose a valid option");
@@ -182,8 +265,7 @@ public class CLI extends ellipticCurve{
 
                     }
 
-//                    Path path11 = Paths.get(root.toAbsolutePath() + "/Default/Storage/inputFile.txt");
-//                    byte[] data2 = Files.readAllBytes(path11);
+                    generatePairToFiles();
 
                     Path path13 = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/x.txt");
                     byte[] xBytes = Files.readAllBytes(path13);
@@ -223,11 +305,29 @@ public class CLI extends ellipticCurve{
                     System.out.println("Cryptogram has been stored into files");
                     System.out.println();
 
+                    boolean validR5 = false;
+                    while (!validR5) {
+                        System.out.print("Would you like to continue using using the program? ('y' or 'n') : ");
+                        String response5 = input.nextLine().toLowerCase(Locale.ROOT);
+                        if ("y".equals(response5)) {
+                            validR5 = true;
+                        } else if ("n".equals(response5)) {
+                            keepGoing = false;
+                            validR5 = true;
+                            input.close();
+                        } else {
+                            System.out.println("please enter 'y' or 'n'");
+                        }
+                    }
+
                     break;
                 case "6":
 
-                    System.out.println();
                     System.out.println("Chose 6");
+                    System.out.println();
+
+                    System.out.println("Please make sure that your passphrase is stored in pw2.txt, then press enter:");
+                    input.nextLine();
 
                     Path path20 = Paths.get(root.toAbsolutePath() + "/Default/Storage/encryptedEC/ECPoint/x.txt");
                     byte[] x3 = Files.readAllBytes(path20);
@@ -254,28 +354,129 @@ public class CLI extends ellipticCurve{
 
                     byte[] m2 = returnMessage.m;
                     boolean verified = returnMessage.verified;
-                    System.out.println("verified: " + verified);
                     if (verified) {
-                        Path path25 = Paths.get(root.toAbsolutePath() + "/Default/Storage/decryptedEC/message.txt");
+                        Path path25 = Paths.get(root.toAbsolutePath() + "/Default/Storage/decryptedMessage.txt");
                         Files.write(path25, m2);
-                        System.out.println("Message accepted and written to file");
+                        System.out.println("Message accepted and written to decryptedMessage.txt");
                         System.out.println("Message written to file: ");
                         String mString = new String(m2, "UTF-8");
                         System.out.println(mString);
-
+                        System.out.println();
                     } else {
                         System.out.println("Message not accepted, something went wrong");
-                        System.out.println("Message recieved was: ");
+                        System.out.println("Message received was: ");
                         String mString = new String(m2, "UTF-8");
                         System.out.println(mString);
+                        System.out.println();
+                    }
+
+                    boolean validR6 = false;
+                    while (!validR6) {
+                        System.out.print("Would you like to continue using using the program? ('y' or 'n') : ");
+                        String response6 = input.nextLine().toLowerCase(Locale.ROOT);
+                        if ("y".equals(response6)) {
+                            validR6 = true;
+                        } else if ("n".equals(response6)) {
+                            keepGoing = false;
+                            validR6 = true;
+                            input.close();
+                        } else {
+                            System.out.println("please enter 'y' or 'n'");
+                        }
                     }
 
                     break;
                 case "7":
                     System.out.println("Chose 7");
+
+                    Path path26 = Paths.get(root.toAbsolutePath() + "/Default/Storage/decryptedMessage.txt");
+                    byte[] inputText = Files.readAllBytes(path26);
+
+                    Path path27 = Paths.get(root.toAbsolutePath() + "/Default/Storage/pw.txt");
+                    byte[] firstPW = Files.readAllBytes(path27);
+
+                    Signature signature = genSignature(inputText, firstPW);
+
+                    Path path28 = Paths.get(root.toAbsolutePath() + "/Default/Storage/FileSignature/h.txt");
+                    Files.write(path28, signature.h.toByteArray());
+
+                    Path path29 = Paths.get(root.toAbsolutePath() + "/Default/Storage/FileSignature/z.txt");
+                    Files.write(path29, signature.z.toByteArray());
+
+                    System.out.println();
+                    System.out.println("Signature of decryptedMessage.txt has been stored to files");
+                    System.out.println();
+
+                    boolean validR7 = false;
+                    while (!validR7) {
+                        System.out.print("Would you like to continue using using the program? ('y' or 'n') : ");
+                        String response7 = input.nextLine().toLowerCase(Locale.ROOT);
+                        if ("y".equals(response7)) {
+                            validR7 = true;
+                        } else if ("n".equals(response7)) {
+                            keepGoing = false;
+                            validR7 = true;
+                            input.close();
+                        } else {
+                            System.out.println("please enter 'y' or 'n'");
+                        }
+                    }
+
                     break;
                 case "8":
                     System.out.println("Chose 8");
+
+                    Path path30 = Paths.get(root.toAbsolutePath() + "/Default/Storage/FileSignature/h.txt");
+                    byte[] h = Files.readAllBytes(path30);
+                    BigInteger bigH = new BigInteger(h);
+
+                    Path path31 = Paths.get(root.toAbsolutePath() + "/Default/Storage/FileSignature/z.txt");
+                    byte[] z = Files.readAllBytes(path31);
+                    BigInteger bigZ = new BigInteger(z);
+
+                    Signature signature1 = new Signature(bigH, bigZ);
+
+
+                    Path path32 = Paths.get(root.toAbsolutePath() + "/Default/Storage/decryptedMessage.txt");
+                    byte[] decryptedMessage = Files.readAllBytes(path32);
+
+
+                    Path path33 = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/x.txt");
+                    byte[] xByteArr = Files.readAllBytes(path33);
+                    BigInteger xBig = new BigInteger(xByteArr);
+
+                    Path path34 = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/y.txt");
+                    byte[] yByteArr = Files.readAllBytes(path34);
+                    BigInteger yBig = new BigInteger(yByteArr);
+
+                    ECPoint V = new ECPoint(xBig, yBig);
+
+                    boolean verifySignature = verifySignature(signature1, decryptedMessage, V);
+
+                    if (verifySignature) {
+                        System.out.println();
+                        System.out.println("Signature of decryptedMessage.txt verified, you may accept the message");
+                        System.out.println();
+                    } else {
+                        System.out.println();
+                        System.out.println("Signature verification of decryptedMessage failed, do not accept the message");
+                    }
+
+                    boolean validR8 = false;
+                    while (!validR8) {
+                        System.out.print("Would you like to continue using using the program? ('y' or 'n') : ");
+                        String response8 = input.nextLine().toLowerCase(Locale.ROOT);
+                        if ("y".equals(response8)) {
+                            validR8 = true;
+                        } else if ("n".equals(response8)) {
+                            keepGoing = false;
+                            validR8 = true;
+                            input.close();
+                        } else {
+                            System.out.println("please enter 'y' or 'n'");
+                        }
+                    }
+
                     break;
                 case "9":
                     System.out.println("Chose 9");
@@ -286,7 +487,8 @@ public class CLI extends ellipticCurve{
 
 
         }
-        System.out.println("Thanks for trying our encryption program, dont come again");
+        System.out.println();
+        System.out.println("Thanks for trying our encryption program!");
     }
     public static void generatePairToFiles() throws IOException {
 
@@ -322,13 +524,6 @@ public class CLI extends ellipticCurve{
         Path path4 = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/EncryptedS/ECPoint/t.txt");
         Files.write(path4, t);
 
-//                    Path path13 = Paths.get("C:/temp/ECPoint/x.txt");
-//                    byte[] returnBytes = Files.readAllBytes(path13);
-//                    BigInteger returnBig = new BigInteger(returnBytes);
-//                    System.out.println("xBig      = " + x);
-//                    System.out.println("returnBig = " + returnBig);
-
-
         Path path11 = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/s.txt");
         Files.write(path11, s);
 
@@ -338,7 +533,5 @@ public class CLI extends ellipticCurve{
         Path path13 = Paths.get(root.toAbsolutePath() + "/Default/Storage/ECPoint/y.txt");
         Files.write(path13, yArr);
 
-        System.out.println("Pair has been generated and stored in file");
-        System.out.println();
     }
 }

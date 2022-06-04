@@ -7,4 +7,5 @@ public class ReturnMessage {
         this.m = m;
         this.verified = verified;
     }
+
 }
