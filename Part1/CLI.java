@@ -45,7 +45,7 @@ public class CLI extends ellipticCurve{
 
                         if ("1".equals(choice)) {
                             System.out.println("Hashing from file");
-                            Path path = Paths.get(root.toAbsolutePath() + "/Part1/Storage/testFile.txt");
+                            Path path = Paths.get(root.toAbsolutePath() + "/Part1/Storage/inputFile.txt");
                             byte[] data = Files.readAllBytes(path);
 
                             byte[] hash = hash(data);
@@ -81,7 +81,7 @@ public class CLI extends ellipticCurve{
                     System.out.println();
                     System.out.println("Chose 2");
 
-                    Path path = Paths.get(root.toAbsolutePath() + "/Part1/Storage/testFile.txt");
+                    Path path = Paths.get(root.toAbsolutePath() + "/Part1/Storage/inputFile.txt");
                     byte[] data = Files.readAllBytes(path);
 
                     Path path2 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/pw.txt");
@@ -155,8 +155,35 @@ public class CLI extends ellipticCurve{
 
                     generatePairToFiles();
 
-                    Path path11 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/testFile.txt");
-                    byte[] data2 = Files.readAllBytes(path11);
+                    System.out.println();
+                    System.out.print("Would you like to use file input or console input? ('1' for file, '2' for console) ");
+                    String choice = input.nextLine();
+
+                    byte[] data2 = {};
+                    boolean choseValid = false;
+                    while (!choseValid) {
+                        if ("1".equals(choice)) {
+                            System.out.println("chose 1");
+                            Path path11 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/inputFile.txt");
+                            data2 = Files.readAllBytes(path11);
+                            choseValid = true;
+                        } else if ("2".equals(choice)) {
+                            System.out.println("chose 2");
+                            System.out.print("Please enter your message: ");
+                            String inputString = input.nextLine();
+                            data2 = inputString.getBytes();
+                            choseValid = true;
+                        } else {
+                            System.out.println("please choose a valid option");
+                            System.out.println();
+                            System.out.print("Would you like to use file input or console input? ('1' for file, '2' for console) ");
+                            choice = input.nextLine();
+                        }
+
+                    }
+
+//                    Path path11 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/inputFile.txt");
+//                    byte[] data2 = Files.readAllBytes(path11);
 
                     Path path13 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/ECPoint/x.txt");
                     byte[] xBytes = Files.readAllBytes(path13);
@@ -227,8 +254,8 @@ public class CLI extends ellipticCurve{
 
                     byte[] m2 = returnMessage.m;
                     boolean verified = returnMessage.verified;
-
-                    if (!verified) {
+                    System.out.println("verified: " + verified);
+                    if (verified) {
                         Path path25 = Paths.get(root.toAbsolutePath() + "/Part1/Storage/decryptedEC/message.txt");
                         Files.write(path25, m2);
                         System.out.println("Message accepted and written to file");

@@ -118,6 +118,26 @@ public class ellipticCurve extends KMACXOF256 {
 
     }
 
+    public static Signature genSignature(byte[] m, byte[] pw) {
+        byte[] s = KMACXOF256(pw, new byte[] {}, 512, "K");
+        byte[] newS = new byte[65];
+        System.arraycopy(s, 0, newS, 1, s.length);
+        newS[0] = (byte) 0;
+
+        byte[] k = KMACXOF256(newS, m, 512, "N");
+        byte[] newK = new byte[65];
+        System.arraycopy(k, 0, newK, 1, k.length);
+        newK[0] = (byte) 0;
+
+        ECPoint G = new ECPoint(BigInteger.valueOf(4L));
+        BigInteger newKBig = new BigInteger(newK);
+        ECPoint U = scalarMultiply(newKBig, G);
+
+
+
+        return new Signature(new byte[] {}, BigInteger.ONE);
+    }
+
     public static ReturnMessage decryptEC(Cryptogram Crypt, byte[] pw) {
 
         byte[] s = KMACXOF256(pw, new byte[] {}, 512, "K");
@@ -125,17 +145,17 @@ public class ellipticCurve extends KMACXOF256 {
         System.arraycopy(s, 0, newS, 1, s.length);
         newS[0] = (byte) 0;
 
-        String myBinaryS = byteArrayToBinaryString(newS);
-        System.out.println("myBinaryS = " + myBinaryS);
-        BigInteger tempBig = new BigInteger(myBinaryS, 2);
-        System.out.println(tempBig);
+//        String myBinaryS = byteArrayToBinaryString(newS);
+//        System.out.println("myBinaryS = " + myBinaryS);
+//        BigInteger tempBig = new BigInteger(myBinaryS, 2);
+//        System.out.println(tempBig);
 
-        BigInteger sInt2 = new BigInteger(s); //this here be the spot
+        BigInteger bigNewS = new BigInteger(newS); //this here be the spot
 //        System.out.println(sInt2);
-        sInt2 = sInt2.multiply(BigInteger.valueOf(4L));
+        bigNewS = bigNewS.multiply(BigInteger.valueOf(4L));
 //        System.out.println(sInt2);
 
-        ECPoint W = scalarMultiply(tempBig, Crypt.Z);
+        ECPoint W = scalarMultiply(bigNewS, Crypt.Z);
         BigInteger Wx = W.x;
         byte[] WxBytes = Wx.toByteArray();
 
@@ -172,16 +192,19 @@ public class ellipticCurve extends KMACXOF256 {
         for (int g = 0; g < k.length; g++) {
             System.out.println("k[" + g + "] = " + k[g]);
         }
-        String bigStringBinary = byteArrayToBinaryString(k);
+
+        //String bigStringBinary = byteArrayToBinaryString(k);
 //        BigInteger bigK = new BigInteger(k);
-        BigInteger bigK = new BigInteger(bigStringBinary, 2);
+        //BigInteger bigK = new BigInteger(bigStringBinary, 2);
+
+        BigInteger bigK = new BigInteger(k);
 
         System.out.println("bigK = " + bigK);
         BigInteger bigKx4 = bigK.multiply(BigInteger.valueOf(4L));
 
         ECPoint W = scalarMultiply(bigKx4, V);
 
-        ECPoint G = new ECPoint(BigInteger.valueOf(4));
+        ECPoint G = new ECPoint(BigInteger.valueOf(4L));
         ECPoint Z = scalarMultiply(bigKx4, G);
 
         BigInteger Wx = W.x;
